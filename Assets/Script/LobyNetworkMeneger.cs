@@ -100,6 +100,9 @@ public class LobyNetworkMeneger : MonoBehaviourPunCallbacks
         waitBattleText.text = "бій через 3 секунди";
         
 
+
+
+
     }
 
     void LoadingGameMap()
