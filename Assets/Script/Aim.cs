@@ -125,6 +125,7 @@ public class Aim : MonoBehaviour
 
     void OnFire(InputAction.CallbackContext context)
     {
+        Debug.Log(targetObj.name);
         if (targetObj != null)
         {
             Vector3 dir = (targetObj.transform.position - transform.position).normalized;
