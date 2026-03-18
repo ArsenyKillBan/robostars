@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
+using Photon.Realtime;
+using ExitGames.Client.Photon;
+using TMPro;
+
 
 public class PlaeyrSetings : MonoBehaviourPunCallbacks
 {
@@ -10,9 +14,37 @@ public class PlaeyrSetings : MonoBehaviourPunCallbacks
     int maxHelth;
     [SerializeField] Slider helthBar;
     PhotonView pv;
+    [SerializeField] TMP_Text resulText;
+
+    GameNetworkManager gameManeger;
+    const byte GAME_IS_WIN = 0;
     private void Awake()
     {
-        pv = GetComponent<PhotonView>();
+        pv = GetComponentInParent<PhotonView>();
+        gameManeger = GetComponentInParent<GameNetworkManager>();
+    }
+
+    void OnHetworkEventCome(EventData obj)
+    {
+        if (obj.Code == GAME_IS_WIN)
+        {
+            if (!pv.IsMine) return;
+            gameManeger.OnGameWin.Invoke();
+       
+        }
+    }
+    private void OnEnable()
+    {
+        PhotonNetwork.NetworkingClient.EventReceived -= OnHetworkEventCome;
+    }
+    private void OnDisable()
+    {
+        PhotonNetwork.NetworkingClient.EventReceived -= OnHetworkEventCome;
+    }
+    void SendWinEvent()
+    {
+        Object[] datas = null;
+        PhotonNetwork.RaiseEvent(GAME_IS_WIN, datas, RaiseEventOptions.Default, SendOptions.SendUnreliable);
     }
     private void Start()
     {
@@ -26,8 +58,10 @@ public class PlaeyrSetings : MonoBehaviourPunCallbacks
         health -= value;
         if(health <= 0)
         {
-            health = maxHelth;
-            GetComponentInChildren<PlayerControler>().Respawn();
+            if (!pv.IsMine) return;
+            SendWinEvent();
+            gameManeger.OnGameOver.Invoke();
+            resulText.text = "You Looser!!";
         }
         helthBar.value = health;
     }
