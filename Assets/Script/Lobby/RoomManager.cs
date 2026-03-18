@@ -10,12 +10,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public static RoomManager Instance;
     private void Awake()
     {
-        if(Instance)
+        if(Instance == null)
         {
-            Destroy(gameObject);
+            DontDestroyOnLoad(gameObject);
+            Instance = this;
+            gameObject.AddComponent<PhotonView>();
         }
-        DontDestroyOnLoad(gameObject);
-        Instance = this;
+        
+        
     }
     public override void OnEnable()
     {
@@ -31,7 +33,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         if(scene.buildIndex >= 1)
         {
-            PhotonNetwork.Instantiate(Path.Combine("Player"), Vector3.zero, Quaternion.identity);
+            PhotonNetwork.Instantiate(Path.Combine("GameManager"), Vector3.zero, Quaternion.identity);
         }
     }
 }

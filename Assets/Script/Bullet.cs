@@ -21,6 +21,11 @@ public class Bullet : MonoBehaviour
         if (pv.IsMine) return;
         if (other.gameObject.CompareTag("Player"))
         {
+            var targetPv = other.GetComponentInParent<PhotonView>();
+            if (targetPv != null && targetPv.Owner != null && pv != null)
+            {
+                if (targetPv.Owner == pv.Owner) return; 
+            }
             other.GetComponentInParent<PlaeyrSetings>().TakeDamage(info.damage);
             PhotonNetwork.Destroy(gameObject);
         }
